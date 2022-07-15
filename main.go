@@ -5,14 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"hackernewsletter/db"
+	"hackernewsletter/hackernews"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
-
-type Config struct {
-	TABLE_NAME string
-}
 
 func main() {
 	table := flag.String("t", "", "The name of the table")
@@ -33,12 +30,12 @@ func main() {
 		TableName: table,
 	}
 
-	new_table := db.Table{client, *table}
+	newTable := db.Table{client, *table}
 
 	resp, err := db.GetTableInfo(context.TODO(), client, input)
 	if err != nil {
 		println(("Table not found. Creating it..."))
-		_, new_err := db.CreateTable(new_table)
+		_, new_err := db.CreateTable(newTable)
 		if new_err != nil {
 			panic("Failed creating table " + *table)
 		}
@@ -48,10 +45,14 @@ func main() {
 
 	fmt.Printf("Table %v has %v elements", *table, resp.Table.ItemCount)
 
-	var news []db.News
+	newsIds := hackernews.GetTopNewsIds()
 
-	news = append(news, db.News{Id: 1, Title: "First", Url: "www.first.com"})
-	news = append(news, db.News{Id: 2, Title: "Second", Text: "Second text"})
+	var newsBatch []db.News
 
-	db.AddNewsBatch(new_table, news)
+	for i := 0; i < 10; i++ {
+		myNews := hackernews.GetNewsById(newsIds[i])
+		newsBatch = append(newsBatch, myNews)
+	}
+
+	db.AddNewsBatch(newTable, newsBatch)
 }

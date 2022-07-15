@@ -17,18 +17,18 @@ type Table struct {
 }
 
 type News struct {
-	Id          int
-	Title       string
-	Text        string
-	Time        time.Time
-	By          string
-	Url         string
-	Score       int
-	Parent      int
-	Descendants string
-	Category    string
-	Delete      bool
-	Dead        bool
+	Id        int    `json:"id"`
+	Title     string `json:"title"`
+	Text      string `json:"text"`
+	Timestamp int    `json:"time"`
+	Author    string `json:"by"`
+	Url       string `json:"url"`
+	Score     int    `json:"score"`
+	Parent    int    `json:"parent"`
+	Comments  int    `json:"descendants"`
+	Category  string `json:"type"`
+	Delete    bool   `json:"delete"`
+	Dead      bool   `json:"dead"`
 }
 
 type DynamoDBDescribeTableAPI interface {
