@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -78,11 +79,12 @@ func GetTableInfo(c context.Context, api DynamoDBDescribeTableAPI, input *dynamo
 	return api.DescribeTable(c, input)
 }
 
-func AddNewsBatch(basics Table, news []News) (int, error) {
+func AddNewsBatch(basics Table, news []News, batchSize int) (int, error) {
+	fmt.Printf("Writing %v news to db...\n", len(news))
+
 	var err error
 	var item map[string]types.AttributeValue
 	written := 0
-	batchSize := 25
 	start := 0
 	end := start + batchSize
 	for start < len(news) {
@@ -108,6 +110,8 @@ func AddNewsBatch(basics Table, news []News) (int, error) {
 		start = end
 		end += batchSize
 	}
+
+	fmt.Println("Batch insert done.")
 
 	return written, err
 }
