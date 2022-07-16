@@ -3,10 +3,10 @@ module hackernewsletter
 go 1.18
 
 require (
+	github.com/aws/aws-lambda-go v1.32.1
 	github.com/aws/aws-sdk-go-v2 v1.16.7
 	github.com/aws/aws-sdk-go-v2/config v1.15.14
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.9.6
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.4.12
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.9
 	github.com/spf13/viper v1.12.0
 )
@@ -40,5 +40,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

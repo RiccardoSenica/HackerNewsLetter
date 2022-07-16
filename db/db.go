@@ -15,7 +15,6 @@ import (
 type Table struct {
 	DynamoDbClient *dynamodb.Client
 	TableName      string
-	IndexName      string
 }
 
 type News struct {
@@ -139,7 +138,9 @@ func ReadTodayNews(basics Table, timeStart int, timeEnd int) ([]News, error) {
 		}
 	}
 
-	fmt.Println("MARSH", len(response.Items), news[0])
+	if len(response.Items) > 0 {
+		fmt.Println("MARSH", len(response.Items), news[0])
+	}
 
 	return news, err
 }
