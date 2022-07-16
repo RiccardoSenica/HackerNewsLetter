@@ -15,13 +15,14 @@ import (
 type Table struct {
 	DynamoDbClient *dynamodb.Client
 	TableName      string
+	IndexName      string
 }
 
 type News struct {
 	Id        int    `json:"id"`
 	Title     string `json:"title"`
 	Text      string `json:"text"`
-	Timestamp int    `json:"time"`
+	CreatedAt int    `json:"time"`
 	Author    string `json:"by"`
 	Url       string `json:"url"`
 	Score     int    `json:"score"`
@@ -45,15 +46,15 @@ func CreateTable(basics Table) (*types.TableDescription, error) {
 			AttributeName: aws.String("Id"),
 			KeyType:       types.KeyTypeHash,
 		}, {
-			AttributeName: aws.String("Title"),
+			AttributeName: aws.String("CreatedAt"),
 			KeyType:       types.KeyTypeRange,
 		}},
 		AttributeDefinitions: []types.AttributeDefinition{{
 			AttributeName: aws.String("Id"),
 			AttributeType: types.ScalarAttributeTypeN,
 		}, {
-			AttributeName: aws.String("Title"),
-			AttributeType: types.ScalarAttributeTypeS,
+			AttributeName: aws.String("CreatedAt"),
+			AttributeType: types.ScalarAttributeTypeN,
 		}},
 		TableName: aws.String(basics.TableName),
 		ProvisionedThroughput: &types.ProvisionedThroughput{
@@ -114,4 +115,31 @@ func AddNewsBatch(basics Table, news []News, batchSize int) (int, error) {
 	fmt.Println("Batch insert done.")
 
 	return written, err
+}
+
+func ReadTodayNews(basics Table, timeStart int, timeEnd int) ([]News, error) {
+	var news []News
+	params, err := attributevalue.MarshalList([]interface{}{timeStart, timeEnd})
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := basics.DynamoDbClient.ExecuteStatement(context.TODO(), &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(
+			fmt.Sprintf("SELECT * FROM \"%v\" WHERE CreatedAt>? AND CreatedAt<? ",
+				basics.TableName)),
+		Parameters: params,
+	})
+	if err != nil {
+		log.Printf("Couldn't get news from %v to %v: %v\n", timeStart, timeEnd, err)
+	} else {
+		err = attributevalue.UnmarshalListOfMaps(response.Items, &news)
+		if err != nil {
+			log.Printf("Couldn't unmarshal response: %v\n", err)
+		}
+	}
+
+	fmt.Println("MARSH", len(response.Items), news[0])
+
+	return news, err
 }

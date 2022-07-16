@@ -8,6 +8,7 @@ import (
 	"hackernewsletter/hackernews"
 	"hackernewsletter/params"
 	"log"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -38,12 +39,12 @@ func main() {
 		TableName: table,
 	}
 
-	newTable := db.Table{client, *table}
+	newsTable := db.Table{client, *table, conf.TableIndex}
 
 	resp, err := db.GetTableInfo(context.TODO(), client, input)
 	if err != nil {
 		println(("Table not found. Creating it..."))
-		_, new_err := db.CreateTable(newTable)
+		_, new_err := db.CreateTable(newsTable)
 		if new_err != nil {
 			panic("Failed creating table " + *table)
 		}
@@ -62,5 +63,11 @@ func main() {
 		newsBatch = append(newsBatch, myNews)
 	}
 
-	db.AddNewsBatch(newTable, newsBatch, conf.BatchSize)
+	db.AddNewsBatch(newsTable, newsBatch, conf.BatchSize)
+
+	timeEnd := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.UTC)
+	timeStart := timeEnd.Add(-time.Hour * 24)
+
+	todayNews, _ := db.ReadTodayNews(newsTable, int(timeStart.Unix()), int(timeEnd.Unix()))
+	println("NEWS", todayNews)
 }
