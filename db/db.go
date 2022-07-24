@@ -139,7 +139,7 @@ func ReadTodayNews(basics Table, timeStart int, timeEnd int) ([]News, error) {
 	}
 
 	if len(response.Items) > 0 {
-		fmt.Println("MARSH", len(response.Items), news[0])
+		fmt.Println("MARSH", len(response.Items))
 	}
 
 	return news, err

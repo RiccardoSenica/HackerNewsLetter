@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"hackernewsletter/db"
 	"hackernewsletter/hackernews"
+	"hackernewsletter/mail"
+	"html/template"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -55,7 +58,30 @@ func Handler(ctx context.Context) (string, error) {
 	timeStart := timeEnd.Add(-time.Hour * 24)
 
 	todayNews, _ := db.ReadTodayNews(newsTable, int(timeStart.Unix()), int(timeEnd.Unix()))
-	fmt.Print("NEWS", todayNews)
+
+	t, err := template.ParseFiles("mail/index.gohtml")
+
+	if err != nil {
+		panic(err)
+	}
+
+	data := struct {
+		News []db.News
+	}{
+		News: todayNews,
+	}
+
+	var doc bytes.Buffer
+
+	err = t.Execute(&doc, data)
+
+	if err != nil {
+		panic(err)
+	}
+
+	body := doc.String()
+
+	mail.SendNewsletter(body)
 
 	return "Completed.", err
 }
