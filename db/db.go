@@ -70,8 +70,10 @@ func CreateTable(basics Table) (*types.TableDescription, error) {
 		if err != nil {
 			log.Printf("Wait for table exists failed. Here's why: %v\n", err)
 		}
+
 		tableDesc = table.TableDescription
 	}
+
 	return tableDesc, err
 }
 
@@ -87,19 +89,24 @@ func AddNewsBatch(basics Table, news []News, batchSize int) (int, error) {
 	written := 0
 	start := 0
 	end := start + batchSize
+
 	for start < len(news) {
 		var writeReqs []types.WriteRequest
+
 		if end > len(news) {
 			end = len(news)
 		}
+
 		for _, entry := range news[start:end] {
 			item, err = attributevalue.MarshalMap(entry)
+
 			if err != nil {
 				log.Printf("Couldn't marshal news %v for batch writing: %v\n", entry.Title, err)
 			} else {
 				writeReqs = append(writeReqs, types.WriteRequest{PutRequest: &types.PutRequest{Item: item}})
 			}
 		}
+
 		_, err = basics.DynamoDbClient.BatchWriteItem(context.TODO(), &dynamodb.BatchWriteItemInput{
 			RequestItems: map[string][]types.WriteRequest{basics.TableName: writeReqs}})
 		if err != nil {
@@ -107,6 +114,7 @@ func AddNewsBatch(basics Table, news []News, batchSize int) (int, error) {
 		} else {
 			written += len(writeReqs)
 		}
+
 		start = end
 		end += batchSize
 	}
@@ -120,7 +128,7 @@ func ReadTodayNews(basics Table, timeStart int, timeEnd int) ([]News, error) {
 	var news []News
 	params, err := attributevalue.MarshalList([]interface{}{timeStart, timeEnd})
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	response, err := basics.DynamoDbClient.ExecuteStatement(context.TODO(), &dynamodb.ExecuteStatementInput{

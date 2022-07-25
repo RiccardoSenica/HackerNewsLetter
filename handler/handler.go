@@ -8,6 +8,9 @@ import (
 	"hackernewsletter/hackernews"
 	"hackernewsletter/mail"
 	"html/template"
+	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -15,11 +18,15 @@ import (
 )
 
 func Handler(ctx context.Context) (string, error) {
+	batchSize, _ := strconv.Atoi(os.Getenv("BATCH_SIZE"))
+	fetchSize, _ := strconv.Atoi(os.Getenv("FETCH_SIZE"))
+
+	var newsBatch []db.News
 	table := "news_table"
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		panic("Unable to load SDK config, " + err.Error())
+		log.Fatalln("Unable to load SDK config, " + err.Error())
 	}
 
 	client := dynamodb.NewFromConfig(cfg)
@@ -35,7 +42,7 @@ func Handler(ctx context.Context) (string, error) {
 		println(("Table not found. Creating it..."))
 		_, new_err := db.CreateTable(newsTable)
 		if new_err != nil {
-			panic("Failed creating table " + table)
+			log.Fatalln("Failed creating table.")
 		}
 
 		resp, err = db.GetTableInfo(context.TODO(), client, input)
@@ -45,14 +52,12 @@ func Handler(ctx context.Context) (string, error) {
 
 	newsIds := hackernews.GetTopNewsIds("https://hacker-news.firebaseio.com/v0/topstories.json")
 
-	var newsBatch []db.News
-
-	for i := 0; i < 10; i++ {
+	for i := 0; i < fetchSize; i++ {
 		myNews := hackernews.GetNewsById(newsIds[i], "https://hacker-news.firebaseio.com/v0/item/{ID}.json")
 		newsBatch = append(newsBatch, myNews)
 	}
 
-	db.AddNewsBatch(newsTable, newsBatch, 25)
+	db.AddNewsBatch(newsTable, newsBatch, batchSize)
 
 	timeEnd := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.UTC)
 	timeStart := timeEnd.Add(-time.Hour * 24)
@@ -60,28 +65,24 @@ func Handler(ctx context.Context) (string, error) {
 	todayNews, _ := db.ReadTodayNews(newsTable, int(timeStart.Unix()), int(timeEnd.Unix()))
 
 	t, err := template.ParseFiles("mail/index.gohtml")
-
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	data := struct {
+	emailNews := struct {
 		News []db.News
 	}{
 		News: todayNews,
 	}
 
-	var doc bytes.Buffer
+	var emailNewsBuffer bytes.Buffer
 
-	err = t.Execute(&doc, data)
-
+	err = t.Execute(&emailNewsBuffer, emailNews)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	body := doc.String()
-
-	mail.SendNewsletter(body)
+	mail.SendNewsletter(emailNewsBuffer.String())
 
 	return "Completed.", err
 }

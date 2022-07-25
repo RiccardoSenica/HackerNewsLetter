@@ -23,8 +23,8 @@ func GetTopNewsIds(url string) (response []string) {
 		log.Fatalln(err)
 	}
 
-	body_string := string(body)
-	response = strings.Split(body_string[1:len(body_string)-1], ",")
+	bodyString := string(body)
+	response = strings.Split(bodyString[1:len(bodyString)-1], ",")
 
 	fmt.Println("Done.")
 
