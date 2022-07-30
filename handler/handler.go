@@ -23,7 +23,7 @@ func Handler(ctx context.Context) (string, error) {
 
 	var newsBatch []db.News
 	table := hackernews.HackernewsTable()
-	htmlTemplate := hackernews.HackernewsTable()
+	htmlTemplate := hackernews.HackernewsTemplate()
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
