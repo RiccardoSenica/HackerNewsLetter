@@ -22,7 +22,8 @@ func Handler(ctx context.Context) (string, error) {
 	fetchSize, _ := strconv.Atoi(os.Getenv("FETCH_SIZE"))
 
 	var newsBatch []db.News
-	table := "news_table"
+	table := hackernews.HackernewsTable()
+	htmlTemplate := hackernews.HackernewsTable()
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -64,7 +65,7 @@ func Handler(ctx context.Context) (string, error) {
 
 	todayNews, _ := db.ReadTodayNews(newsTable, int(timeStart.Unix()), int(timeEnd.Unix()))
 
-	t, err := template.ParseFiles("mail/index.gohtml")
+	t, err := template.ParseFiles(fmt.Sprintf("assets/%v.gohtml", htmlTemplate))
 	if err != nil {
 		log.Fatalln(err)
 	}

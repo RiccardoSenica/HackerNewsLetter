@@ -25,11 +25,7 @@ type News struct {
 	Author    string `json:"by"`
 	Url       string `json:"url"`
 	Score     int    `json:"score"`
-	Parent    int    `json:"parent"`
-	Comments  int    `json:"descendants"`
 	Category  string `json:"type"`
-	Delete    bool   `json:"delete"`
-	Dead      bool   `json:"dead"`
 }
 
 type DynamoDBDescribeTableAPI interface {

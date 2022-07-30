@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+func HackernewsTable() string {
+	return "hacker_news_table"
+}
+
+func HackernewsTemplate() string {
+	return "hackernews_template"
+}
+
 func GetTopNewsIds(url string) (response []string) {
 	fmt.Println("Retrieving news...")
 
