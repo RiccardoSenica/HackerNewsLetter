@@ -32,8 +32,14 @@
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr;
         gap: 2rem;
+      }
+
+      @media screen and (min-width: 768px) {
+        .grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
       }
 
       .grid__item {
@@ -57,6 +63,15 @@
         font-size: 1.125rem;
         margin: 1rem 0;
         line-height: 1.5rem;
+      }
+
+      .article__title,
+      .article__text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
       }
 
       .card__detail {
@@ -83,19 +98,19 @@
     <div class="container">
       <div class="grid">
         {{ range .News }}
-          <div class="grid__item" data-article-id="{{ .Id }}">
-            <h2 class="article__title" data-article-title="">
-              {{ .Title }}
-            </h2>
-            <small class="article__time" data-article-time="">Unix Epoch {{ .CreatedAt }}</small>
-            <p class="article__text" data-article-text="">
-              {{ .Text }}
-            </p>
-            <div class="card__detail">
-              <h3 class="article__by" data-article-by="">written by: {{ .Author }}</h3>
-              <a class="article__url" data-article-url-="" href="{{ .Url }}" target="_blank">Read more</a>
-            </div>
+        <div class="grid__item" data-article-id="32206579">
+          <h2 class="article__title" data-article-title="">
+            {{ .Title }}
+          </h2>
+          <small class="article__time" data-article-time="">Unix Epoch {{ .CreatedAt }}</small>
+          <div class="article__text" data-article-text="">
+            {{ .Text }}
           </div>
+          <div class="card__detail">
+            <h3 class="article__by" data-article-by="">written by: {{ .Author }}</h3>
+            <a class="article__url" data-article-url-="" href="{{ .Url }}" target="_blank">Read more</a>
+          </div>
+        </div>
         {{ end }}
       </div>
     </div>
