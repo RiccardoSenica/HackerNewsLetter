@@ -3,115 +3,39 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Newsletter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      * {
-        font-family: Montserrat, sans-serif;
-        padding: 0;
-        margin: 0;
-      }
-
-      body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-        background: #fff;
-      }
-
-      .container {
-        margin: 5% auto;
-        max-width: 90%;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
-
-      @media screen and (min-width: 768px) {
-        .grid {
-          grid-template-columns: repeat(3, 1fr);
-        }
-      }
-
-      .grid__item {
-        background: #fff;
-        border-radius: 0.5rem;
-        padding: 1.5rem 1rem;
-        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2), -4px 0 4px rgba(0, 0, 0, 0.2);
-      }
-
-      .article__title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .article__time {
-        font-size: 0.8rem;
-        opacity: 0.7;
-      }
-
-      .article__text {
-        font-size: 1.125rem;
-        margin: 1rem 0;
-        line-height: 1.5rem;
-      }
-
-      .article__title,
-      .article__text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
-
-      .card__detail {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .article__by {
-        font-size: 1rem;
-        font-weight: 500;
-      }
-
-      .article__url {
-        text-decoration: none;
-        font-size: 1rem;
-        font-weight: 600;
-        color: rgb(35, 35, 163);
-      }
-    </style>
   </head>
-  <body>
+  <body style="font-family: Montserrat, sans-serif; padding: 0; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100%; background: #fff;">
     <h1>Today's Newsletter</h1>
-    <div class="container">
-      <div class="grid">
-        {{ range .News }}
-        <div class="grid__item" data-article-id="32206579">
-          <h2 class="article__title" data-article-title="">
+    <div style="margin: 5% auto; max-width: 95%;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+      {{ range .News }}
+        <div style="background: #fff; border-radius: 0.5rem; padding: 1.5rem 1rem; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2), -4px 0 4px rgba(0, 0, 0, 0.2);" data-article-id="">
+          <h2 style="font-size: 1.5rem; margin-bottom: 1rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" data-article-title="">
             {{ .Title }}
           </h2>
-          <small class="article__time" data-article-time="">Unix Epoch {{ .CreatedAt }}</small>
-          <div class="article__text" data-article-text="">
+          <small style="font-size: 0.8rem; opacity: 0.7;" data-article-time="">Unix Epoch {{ .CreatedAt }}</small>
+          <div style="font-size: 1.125rem; margin: 1rem 0; line-height: 1.5rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" data-article-text="">
             {{ .Text }}
           </div>
-          <div class="card__detail">
-            <h3 class="article__by" data-article-by="">written by: {{ .Author }}</h3>
-            <a class="article__url" data-article-url-="" href="{{ .Url }}" target="_blank">Read more</a>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1rem; font-weight: 500;" data-article-by="">written by: {{ .Author }}</h3>
+            <a
+              style="text-decoration: none; font-size: 1rem; font-weight: 600; color: rgb(35, 35, 163);"
+              data-article-url-=""
+              href="{{ .Url }}"
+              target="_blank"
+              >Read more</a
+            >
           </div>
         </div>
-        {{ end }}
+      {{ end }}
       </div>
     </div>
   </body>
